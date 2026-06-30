@@ -6,9 +6,7 @@ from datetime import datetime
 
 os.makedirs("output", exist_ok=True)
 os.makedirs("logs", exist_ok=True)
-# --------------------
-# LOGGING
-# --------------------
+
 logging.basicConfig(
     filename="etl.log",
     level=logging.INFO,
@@ -21,9 +19,7 @@ print(f"Pipeline executed at {datetime.now()}")
 
 logging.info(f"Pipeline executed at {datetime.now()}")
 
-# --------------------
-# EXTRACT
-# --------------------
+
 try:
 
     df = pd.read_csv("data/sales_data.csv")
@@ -31,22 +27,18 @@ try:
     print("Raw Data")
     print(df)
 
-    # rest of ETL code
+   
 
 except Exception as e:
     logging.error(f"Pipeline Failed: {e}")
     print(f"Error: {e}")
 
-# --------------------
-# DATA VALIDATION
-# --------------------
+
 if df.isnull().sum().sum() > 0:
     print("Missing values found")
     logging.warning("Missing values found in dataset")
 
-# --------------------
-# TRANSFORM
-# --------------------
+
 df["total_amount"] = df["quantity"] * df["price"]
 
 df = df.drop_duplicates()
@@ -54,9 +46,7 @@ df = df.drop_duplicates()
 print("\nTransformed Data")
 print(df)
 
-# --------------------
-# LOAD
-# --------------------
+
 conn = sqlite3.connect("output/sales.db")
 
 df.to_sql(
@@ -69,9 +59,7 @@ df.to_sql(
 print("\nData Loaded Successfully")
 logging.info("Data Loaded Successfully")
 
-# --------------------
-# CUSTOMER REPORT
-# --------------------
+
 report = pd.read_sql_query("""
 SELECT
     customer,
@@ -89,9 +77,7 @@ report.to_csv(
     index=False
 )
 
-# --------------------
-# PRODUCT REPORT
-# --------------------
+
 product_report = pd.read_sql_query("""
 SELECT
     product,
@@ -109,9 +95,7 @@ product_report.to_csv(
     index=False
 )
 
-# --------------------
-# CLOSE CONNECTION
-# --------------------
+
 conn.close()
 
 logging.info("Pipeline Completed Successfully")
